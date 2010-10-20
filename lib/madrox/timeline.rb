@@ -1,0 +1,67 @@
+module Madrox
+  class Timeline
+    # Public: Gets the user name for this timeline.
+    #
+    # Returns a String.
+    attr_reader :user
+
+    # Public: Gets the email for this timeline.  This is used as part of the
+    # git actor when posting updates.
+    #
+    # Returns a String.
+    attr_reader :email
+
+    # Public: Sets the email for this timeline.
+    #
+    # email - The String email.
+    # 
+    # Returns nothing.
+    attr_accessor :email
+
+    # Gets the Madrox object for this timeline.
+    #
+    # Returns a Madrox::Repo instance.
+    attr_reader   :repo
+
+    # Gets the Grit object for this Madrox::Repo.
+    #
+    # Returns a Grit::Repo instance.
+    attr_reader   :grit
+
+    def initialize(repo, user, email = nil)
+      @user  = user
+      @email = email
+      @repo  = repo
+      @grit  = repo.grit
+    end
+
+    # Public: Gets the messages for this timeline.  Automatically removes any 
+    # merge commits.
+    #
+    # Returns an Array of Grit::Commit instances.
+    def messages
+      @grit.log(@user).delete_if { |commit| commit.parents.size != 1 }
+    end
+
+    # Posts the given message to the timeline.  This is a simple commit with
+    # no changed content.  Just a message.
+    #
+    # message - String message for the timeline update.
+    #
+    # Returns a String SHA1 of the created Git commit.
+    def post(message)
+      idx     = @grit.index
+      parents = [@grit.commit(@user) || @grit.commit("HEAD")]
+      parents.compact!
+      @grit.index.commit(message, parents, actor, last_tree=nil, @user)
+    end
+
+    # Public: Builds a Git actor object for any posted updates to this 
+    # timeline.  Uses the timelines user and email.
+    #
+    # Returns a Grit::Actor.
+    def actor
+      Grit::Actor.new(@user, @email)
+    end
+  end
+end

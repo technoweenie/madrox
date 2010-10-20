@@ -1,0 +1,95 @@
+#!/usr/bin/env ruby
+
+$:.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
+
+require 'optparse'
+require 'rubygems'
+require 'madrox'
+
+help = <<HELP
+Madrox is a distributed Twitter implementation on Git.
+
+Basic Command Line Usage:
+  madrox [OPTIONS] [TIMELINE] [PATH]
+
+        PATH                             The path to the madrox repository (default: .).
+        TIMELINE                         The branch to store this timeline update.
+
+Options:
+HELP
+
+exec    = {}
+options = {}
+
+opts = OptionParser.new do |opts|
+  opts.banner = help
+
+  opts.on("--email [EMAIL]", "Sets the email for the Madrox timeline.") do |email|
+    options[:email] = email
+  end
+
+  opts.on('--msg [MESSAGE]', "Posts to the Madrox timeline") do |msg|
+    options[:msg] = msg
+  end
+
+  opts.on('--irb', "Loads an IRB session") do 
+    options[:irb] = true
+  end
+end
+
+# Read command line options into `options` hash
+begin
+  opts.parse!
+rescue OptionParser::InvalidOption
+  puts "madrox: #{$!.message}"
+  puts "madrox: try 'madrox --help' for more information"
+  exit
+end
+
+name     = ARGV.shift # timeline name
+m_path   = ARGV.shift || Dir.pwd
+madrox   = Madrox::Repo.new(m_path)
+timeline = madrox.timeline(name, options[:email])
+
+if !madrox.exist?
+  puts "Invalid Madrox wiki at #{File.expand_path(m_path).inspect}"
+  exit 0
+end
+
+if msg = (timeline.user && options[:msg])
+  puts "@#{timeline.user}: #{msg}"
+  puts timeline.post(msg)
+end
+
+if options[:irb]
+  require 'irb'
+  # http://jameskilton.com/2009/04/02/embedding-irb-into-your-ruby-application/
+  module IRB # :nodoc:
+    def self.start_session(binding)
+      unless @__initialized
+        args = ARGV
+        ARGV.replace(ARGV.dup)
+        IRB.setup(nil)
+        ARGV.replace(args)
+        @__initialized = true
+      end
+
+      ws  = WorkSpace.new(binding)
+      irb = Irb.new(ws)
+
+      @CONF[:IRB_RC].call(irb.context) if @CONF[:IRB_RC]
+      @CONF[:MAIN_CONTEXT] = irb.context
+
+      catch(:IRB_EXIT) do
+        irb.eval_input
+      end
+    end
+  end
+
+  puts "Loaded Madrox wiki at #{File.expand_path(m_path).inspect}."
+  IRB.start_session(binding)
+else
+  timeline.messages.each do |commit|
+    puts "[#{commit.committed_date}] @#{commit.author.name}: #{commit.message}"
+  end
+end

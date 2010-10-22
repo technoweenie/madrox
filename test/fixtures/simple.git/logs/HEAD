@@ -1,0 +1,12 @@
+0000000000000000000000000000000000000000 bcbcd41f106f5124b1c12b272957518ac5565268 rick <technoweenie@gmail.com> 1287750396 +0200	clone: from /Users/rick/p/madrox/test/fixtures/empty.git
+bcbcd41f106f5124b1c12b272957518ac5565268 bcbcd41f106f5124b1c12b272957518ac5565268 user1 <technoweenie@gmail.com> 1287750433 +0200	checkout: moving from bcbcd41f106f5124b1c12b272957518ac5565268 to user1
+bcbcd41f106f5124b1c12b272957518ac5565268 cd45ac1b461450245fc104aea0506da6fab1db72 user1 <technoweenie@gmail.com> 1287750442 +0200	commit: msg 1
+cd45ac1b461450245fc104aea0506da6fab1db72 bcbcd41f106f5124b1c12b272957518ac5565268 user1 <technoweenie@gmail.com> 1287750447 +0200	checkout: moving from user1 to master
+bcbcd41f106f5124b1c12b272957518ac5565268 bcbcd41f106f5124b1c12b272957518ac5565268 user1 <technoweenie@gmail.com> 1287750448 +0200	checkout: moving from bcbcd41f106f5124b1c12b272957518ac5565268 to user2
+bcbcd41f106f5124b1c12b272957518ac5565268 e28333e7c6f42004d7d619a1b485072e6361da94 user2 <technoweenie@gmail.com> 1287750454 +0200	commit: msg 2
+e28333e7c6f42004d7d619a1b485072e6361da94 cd45ac1b461450245fc104aea0506da6fab1db72 user2 <technoweenie@gmail.com> 1287750456 +0200	checkout: moving from user2 to user1
+cd45ac1b461450245fc104aea0506da6fab1db72 f524dcedce5d4f20f3a1d2ecb79f63c8d175d85f user1 <technoweenie@gmail.com> 1287750461 +0200	commit: msg 3
+f524dcedce5d4f20f3a1d2ecb79f63c8d175d85f bcbcd41f106f5124b1c12b272957518ac5565268 rick <technoweenie@gmail.com> 1287750470 +0200	checkout: moving from user1 to master
+bcbcd41f106f5124b1c12b272957518ac5565268 bcbcd41f106f5124b1c12b272957518ac5565268 rick <technoweenie@gmail.com> 1287750472 +0200	checkout: moving from bcbcd41f106f5124b1c12b272957518ac5565268 to merged
+bcbcd41f106f5124b1c12b272957518ac5565268 e28333e7c6f42004d7d619a1b485072e6361da94 rick <technoweenie@gmail.com> 1287750475 +0200	merge user2: Fast-forward
+e28333e7c6f42004d7d619a1b485072e6361da94 901f323ae58b3f09043522db6dfe6131941b1393 rick <technoweenie@gmail.com> 1287750476 +0200	merge user1: Merge made by recursive.

@@ -7,6 +7,7 @@ module Madrox
 
     def initialize(path)
       @grit = Grit::Repo.new(path)
+    rescue Grit::NoSuchPathError, Grit::InvalidGitRepositoryError
     end
 
     # Public: Determines whether this Madrox repo has an available Git
@@ -14,7 +15,7 @@ module Madrox
     #
     # Returns true if the Git repo exists, or false.
     def exist?
-      @grit.git.exists?
+      @grit && @grit.git.exists?
     end
 
     # Gets a Madrox::Timeline for the given user.

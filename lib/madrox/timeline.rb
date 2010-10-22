@@ -47,7 +47,7 @@ module Madrox
     # no changed content.  Just a message.
     #
     # message - String message for the timeline update.
-    # options - Hash of options passed to Grit::Index#commit.
+    # options - Hash of options passed to Grit::Index#commit. 
     #
     # Returns a String SHA1 of the created Git commit.
     def post(message, options = {})

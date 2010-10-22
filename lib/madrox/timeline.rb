@@ -47,13 +47,15 @@ module Madrox
     # no changed content.  Just a message.
     #
     # message - String message for the timeline update.
+    # options - Hash of options passed to Grit::Index#commit.
     #
     # Returns a String SHA1 of the created Git commit.
-    def post(message)
+    def post(message, options = {})
       idx     = @grit.index
       parents = [@grit.commit(@user) || @grit.commit("HEAD")]
       parents.compact!
-      @grit.index.commit(message, parents, actor, last_tree=nil, @user)
+      options.update(:parents => parents, :committer => actor, :head => @user)
+      @grit.index.commit(message, options)
     end
 
     # Public: Builds a Git actor object for any posted updates to this 

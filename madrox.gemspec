@@ -50,11 +50,14 @@ Gem::Specification.new do |s|
   ## THE MANIFEST COMMENTS, they are used as delimiters by the task.
   # = MANIFEST =
   s.files = %w[
+    LICENSE
     README.md
+    Rakefile
     bin/madrox
     lib/madrox.rb
     lib/madrox/repo.rb
     lib/madrox/timeline.rb
+    madrox.gemspec
     test/fixtures/empty.git/COMMIT_EDITMSG
     test/fixtures/empty.git/HEAD
     test/fixtures/empty.git/config

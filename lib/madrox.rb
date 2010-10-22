@@ -1,7 +1,8 @@
 module Madrox
   VERSION = "0.1.0"
-
-  require 'grit'
-  require 'madrox/repo'
-  require 'madrox/timeline'
 end
+
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'vendor', 'grit')
+require 'grit'
+require 'madrox/repo'
+require 'madrox/timeline'

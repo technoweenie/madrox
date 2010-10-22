@@ -28,4 +28,12 @@ class TimelineTest < MadroxTest
     assert_equal [sha, 'e28333e7c6f42004d7d619a1b485072e6361da94'], 
       timeline.messages.map { |m| m.sha }
   end
+
+  def test_posts_commit_from_date
+    @repo    = fork_git_fixture(:simple)
+    timeline = @repo.timeline('user2', 'user2@email.com')
+    sha      = timeline.post('hi', :committed_date => Time.utc(2000))
+    commit   = @repo.grit.commit(sha)
+    assert_equal 2000, commit.committed_date.year
+  end
 end

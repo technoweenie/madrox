@@ -36,4 +36,32 @@ class TimelineTest < MadroxTest
     commit   = @repo.grit.commit(sha)
     assert_equal 2000, commit.committed_date.year
   end
+
+  def test_retweets_without_annotation
+    @repo     = fork_git_fixture(:simple)
+    timeline1 = @repo.timeline('user1')
+    timeline2 = @repo.timeline('user2')
+    original  = timeline1.messages.last
+    sha       = timeline2.retweet(original, :committed_date => Time.utc(2000))
+    retweet   = @repo.grit.commit(sha)
+    assert_equal 1287750442,       retweet.authored_date.to_i
+    assert_equal 2000,             retweet.committed_date.year
+    assert_equal 'user1',          retweet.author.name
+    assert_equal 'user2',          retweet.committer.name
+    assert_equal original.message, retweet.message
+  end
+
+  def test_retweets_with_annotation
+    @repo    = fork_git_fixture(:simple)
+    timeline1 = @repo.timeline('user1')
+    timeline2 = @repo.timeline('user2')
+    original  = timeline1.messages.last
+    sha       = timeline2.retweet(original, 'sweet!', :committed_date => Time.utc(2000))
+    retweet   = @repo.grit.commit(sha)
+    assert_equal 1287750442, retweet.authored_date.to_i
+    assert_equal 2000,       retweet.committed_date.year
+    assert_equal 'user1',    retweet.author.name
+    assert_equal 'user2',    retweet.committer.name
+    assert_equal "sweet! RT @user1 #{original.message}", retweet.message
+  end
 end

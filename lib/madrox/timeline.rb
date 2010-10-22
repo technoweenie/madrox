@@ -58,6 +58,28 @@ module Madrox
       @grit.index.commit(message, options)
     end
 
+    # Retweets a given commit.  The author name and date is taken from the 
+    # commit.  The message can optionally be annotated.
+    #
+    # commit  - The Grit::Commit that is being retweeted.
+    # message - An optional String annotation to the retweet content.
+    # options - An optional Hash that is passed to #post.
+    #
+    # Returns a String SHA1 of the created Git commit.
+    def retweet(commit, message, options = {})
+      if message.is_a?(Hash)
+        options = message
+        message = nil
+      end
+      if message
+        message << " RT @#{commit.author.name}"
+      end
+      message = "#{message} #{commit.message}"
+      message.strip!
+      post(message, options.update(:author => commit.author, 
+        :authored_date => commit.authored_date))
+    end
+
     # Public: Builds a Git actor object for any posted updates to this 
     # timeline.  Uses the timelines user and email.
     #

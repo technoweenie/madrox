@@ -1,5 +1,5 @@
 module Madrox
-  VERSION = "0.1.0"
+  VERSION = "0.1.1"
 end
 
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'vendor', 'grit', 'lib')

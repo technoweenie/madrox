@@ -1,0 +1,17 @@
+PATH
+  remote: .
+  specs:
+    madrox (0.1.0)
+      yajl-ruby (~> 0.7.7)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    yajl-ruby (0.7.8)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  madrox!
+  yajl-ruby (~> 0.7.7)

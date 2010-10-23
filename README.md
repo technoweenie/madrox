@@ -51,8 +51,7 @@ them locally.
 
 You can import tweets with the `--import` option.  You're still bound by Twitter's 3200 tweet limit, unfortunately.
 
-    madrox --import=twitter --since-id=123 --max-id-456 \
-      --email=EMAIL TWITTER_LOGIN
+    $ madrox --import=twitter --since-id=123 --max-id-456 --email=EMAIL TWITTER_LOGIN
 
     You can also use `rake console` and import the data yourself from other sources.
 

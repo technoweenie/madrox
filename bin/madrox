@@ -5,6 +5,9 @@ $:.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
 require 'optparse'
 require 'rubygems'
 require 'madrox'
+require 'open-uri'
+require 'time'
+require 'yajl'
 
 help = <<HELP
 Madrox is a distributed Twitter implementation on Git.
@@ -30,6 +33,18 @@ opts = OptionParser.new do |opts|
 
   opts.on('--msg [MESSAGE]', "Posts to the Madrox timeline") do |msg|
     options[:msg] = msg
+  end
+
+  opts.on('--import [name]', "Import from external service (twitter)") do |name|
+    options[:import] = name.to_sym
+  end
+
+  opts.on('--since-id [ID]', "Oldest Twitter ID to import") do |id|
+    options[:since_id] = id
+  end
+  
+  opts.on('--max-id [ID]', "Newest Twitter ID to import") do |id|
+    options[:max_id] = id
   end
 
   opts.on('--irb', "Loads an IRB session") do 
@@ -88,8 +103,36 @@ if options[:irb]
 
   puts "Loaded Madrox wiki at #{File.expand_path(m_path).inspect}."
   IRB.start_session(binding)
-else
-  timeline.messages.each do |commit|
-    puts "[#{commit.committed_date}] @#{commit.author.name}: #{commit.message}"
+else 
+  case options[:import]
+    when :twitter
+      puts "Importing tweets from Twitter..."
+      page   = 1
+      result = []
+      tweets = []
+      url    = "http://api.twitter.com/1/statuses/user_timeline.json?screen_name=#{timeline.user}&trim_user=1&count=200"
+      if options[:since_id]
+        url << "&since_id=#{options[:since_id]}"
+      end
+      if options[:max_id]
+        url << "&max_id=#{options[:max_id]}"
+      end
+      until page > 1 && result.empty?
+        open("#{url}&page=#{page}") do |f|
+          page  += 1
+          result = Yajl::Parser.parse(f.read)
+          tweets.push *result if !result.empty?
+        end
+      end
+      puts "Importing #{tweets.size} tweets..."
+      tweets.reverse!
+      tweets.each_with_index do |tweet, idx|
+        puts tweet['id'] if (idx + 1) % 100 == 0
+        timeline.post(tweet['text'], :committed_date => Time.parse(tweet['created_at']))
+      end
+    else # no importer, just list their tweets
+      timeline.messages.each do |commit|
+        puts "[#{commit.committed_date}] @#{commit.author.name}: #{commit.message}"
+      end
   end
 end

@@ -45,6 +45,12 @@ them locally.
     @bob: @rick: sup?
     @rick: Hi
 
+## TODO
+
+* Twitter pushing support
+* Git Notes for Twitter (or other) metadata.
+* Better importing.
+
 ## Requirements
 
 gem install grit

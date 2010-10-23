@@ -3,6 +3,8 @@
 Distributed Twitter implementation built on Git using content-less commits as
 tweets.
 
+## USAGE
+
 Madrox needs an existing repository with at a single initial commit.  "Tweets"
 are simply commits in a user-specific branch.  Use git to push/pull these 
 branches with remote git repositories.  Create custom timelines by merging
@@ -44,6 +46,20 @@ them locally.
     @rick: @bob: nada
     @bob: @rick: sup?
     @rick: Hi
+
+## Importing
+
+You can import tweets with the `--import` option.  You're still bound by Twitter's 3200 tweet limit, unfortunately.
+
+    madrox --import=twitter --since-id=123 --max-id-456 \
+      --email=EMAIL TWITTER_LOGIN
+
+    You can also use `rake console` and import the data yourself from other sources.
+
+    $ madrox --irb --email=EMAIL TWITTER_LOGIN
+    >> tweets.each do |tweet|
+    ?>   timeline.post(tweet['text'], :committed_date => Time.parse(tweet['created_at']))
+    ?> end
 
 ## TODO
 

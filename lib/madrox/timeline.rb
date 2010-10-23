@@ -52,9 +52,8 @@ module Madrox
     # Returns a String SHA1 of the created Git commit.
     def post(message, options = {})
       idx     = @grit.index
-      parents = [@grit.commit(@user) || @grit.commit("HEAD")]
-      parents.compact!
-      options.update(:parents => parents, :committer => actor, :head => @user)
+      options = {:committer => actor, :head => @user}.update(options)
+      options[:parents] ||= [@grit.commit(@user) || @grit.commit("HEAD")].compact!
       @grit.index.commit(message, options)
     end
 
@@ -78,6 +77,11 @@ module Madrox
       message.strip!
       post(message, options.update(:author => commit.author, 
         :authored_date => commit.authored_date))
+    end
+
+    def fave(commit)
+      post(commit.message, :head => "#{@user}-favorites",
+        :author => commit.author, :authored_date => commit.authored_date)
     end
 
     # Public: Builds a Git actor object for any posted updates to this 

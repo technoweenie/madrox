@@ -52,7 +52,7 @@ class TimelineTest < MadroxTest
   end
 
   def test_retweets_with_annotation
-    @repo    = fork_git_fixture(:simple)
+    @repo     = fork_git_fixture(:simple)
     timeline1 = @repo.timeline('user1')
     timeline2 = @repo.timeline('user2')
     original  = timeline1.messages.last
@@ -63,5 +63,20 @@ class TimelineTest < MadroxTest
     assert_equal 'user1',    retweet.author.name
     assert_equal 'user2',    retweet.committer.name
     assert_equal "sweet! RT @user1 #{original.message}", retweet.message
+  end
+
+  def test_favoriting_a_tweet
+    @repo     = fork_git_fixture(:simple)
+    timeline1 = @repo.timeline('user1')
+    timeline2 = @repo.timeline('user2')
+    original  = timeline2.messages.last
+
+    assert_nil @repo.grit.commit('user1-favorites')
+    sha  = timeline1.fave(original)
+    fave = @repo.grit.commit(sha)
+    assert_equal 'user1', fave.committer.name
+    assert_equal 'user2', fave.author.name
+
+    assert_equal sha, @repo.grit.commit('user1-favorites').sha
   end
 end

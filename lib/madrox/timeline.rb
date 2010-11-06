@@ -21,12 +21,12 @@ module Madrox
     # Gets the Madrox object for this timeline.
     #
     # Returns a Madrox::Repo instance.
-    attr_reader   :repo
+    attr_reader :repo
 
     # Gets the Grit object for this Madrox::Repo.
     #
     # Returns a Grit::Repo instance.
-    attr_reader   :grit
+    attr_reader :grit
 
     def initialize(repo, user, email = nil)
       @user  = user
@@ -57,8 +57,8 @@ module Madrox
         delete_if { |commit| commit.parents.size != 1 }
     end
 
-    # Posts the given message to the timeline.  This is a simple commit with
-    # no changed content.  Just a message.
+    # Public: Posts the given message to the timeline.  This is a simple
+    # commit with no changed content.  Just a message.
     #
     # message - String message for the timeline update.
     # options - Hash of options passed to Grit::Index#commit. 
@@ -72,8 +72,8 @@ module Madrox
       @grit.index.commit(message, options)
     end
 
-    # Retweets a given commit.  The author name and date is taken from the 
-    # commit.  The message can optionally be annotated.
+    # Public: Retweets a given commit.  The author name and date is taken
+    # from the commit.  The message can optionally be annotated.
     #
     # commit  - The Grit::Commit that is being retweeted.
     # message - An optional String annotation to the retweet content.
@@ -94,6 +94,10 @@ module Madrox
         :authored_date => commit.authored_date))
     end
 
+    # Public: Marks a given commit as a favorite.  The commit is stored in a
+    # separate branch named "#{user}-favorites".  The commit's original 
+    # committed author and date remain the same, and the new commit tracks
+    # the date it was favorited.
     def fave(commit)
       post(commit.message, :head => "#{@user}-favorites",
         :author => commit.author, :authored_date => commit.authored_date)

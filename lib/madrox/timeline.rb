@@ -38,9 +38,23 @@ module Madrox
     # Public: Gets the messages for this timeline.  Automatically removes any 
     # merge commits.
     #
+    # options - Hash of options to filter the message output.
+    #           :max_count - Fixnum specifying the number of commits to show.  
+    #                        Default: 30.
+    #           :skip      - Fixnum specifying the number of commits to skip.
+    #           :page      - Fixnum of the current page.  This is used to 
+    #                        implicitly calculate the :skip option.  
+    #                        Default: 1
+    #
     # Returns an Array of Grit::Commit instances.
-    def messages
-      @grit.log(@user).delete_if { |commit| commit.parents.size != 1 }
+    def messages(options = {})
+      options[:no_merges]   = true
+      options[:max_count] ||= 30
+      options[:skip]      ||= begin
+        options[:max_count] * ([options.delete(:page).to_i, 1].max - 1)
+      end
+      @grit.log(@user, nil, options).
+        delete_if { |commit| commit.parents.size != 1 }
     end
 
     # Posts the given message to the timeline.  This is a simple commit with

@@ -32,7 +32,7 @@ class TimelineTest < MadroxTest
   def test_posts_commit_from_date
     @repo    = fork_git_fixture(:simple)
     timeline = @repo.timeline('user2', 'user2@email.com')
-    sha      = timeline.post('hi', :committed_date => Time.utc(2000))
+    sha      = timeline.post('hi', :committed_date => Time.utc(2000, 2))
     commit   = @repo.grit.commit(sha)
     assert_equal 2000, commit.committed_date.year
   end
@@ -42,7 +42,7 @@ class TimelineTest < MadroxTest
     timeline1 = @repo.timeline('user1')
     timeline2 = @repo.timeline('user2')
     original  = timeline1.messages.last
-    sha       = timeline2.retweet(original, :committed_date => Time.utc(2000))
+    sha       = timeline2.retweet(original, :committed_date => Time.utc(2000, 2))
     retweet   = @repo.grit.commit(sha)
     assert_equal 1287750442,       retweet.authored_date.to_i
     assert_equal 2000,             retweet.committed_date.year
@@ -56,7 +56,7 @@ class TimelineTest < MadroxTest
     timeline1 = @repo.timeline('user1')
     timeline2 = @repo.timeline('user2')
     original  = timeline1.messages.last
-    sha       = timeline2.retweet(original, 'sweet!', :committed_date => Time.utc(2000))
+    sha       = timeline2.retweet(original, 'sweet!', :committed_date => Time.utc(2000, 2))
     retweet   = @repo.grit.commit(sha)
     assert_equal 1287750442, retweet.authored_date.to_i
     assert_equal 2000,       retweet.committed_date.year

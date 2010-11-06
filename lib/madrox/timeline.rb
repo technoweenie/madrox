@@ -53,7 +53,8 @@ module Madrox
     def post(message, options = {})
       idx     = @grit.index
       options = {:committer => actor, :head => @user}.update(options)
-      options[:parents] ||= [@grit.commit(@user) || @grit.commit("HEAD")].compact!
+      options[:parents] ||= [@grit.commit(@user) || @grit.commit("HEAD")]
+      options[:parents].compact!
       @grit.index.commit(message, options)
     end
 

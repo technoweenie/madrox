@@ -20,7 +20,7 @@ class TimelineTest < MadroxTest
   end
 
   def test_posts_commit
-    @repo = fork_git_fixture(:simple)
+    @repo    = fork_git_fixture(:simple)
     timeline = @repo.timeline('user2', 'user2@email.com')
     assert_equal %w(e28333e7c6f42004d7d619a1b485072e6361da94), 
       timeline.messages.map { |m| m.sha }

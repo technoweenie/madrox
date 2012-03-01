@@ -131,6 +131,7 @@ else
         timeline.post(tweet['text'], :committed_date => Time.parse(tweet['created_at']))
       end
     else # no importer, just list their tweets
+      puts "Warning: no importer known for this service (only 'twitter' is available). Tweets of the account:"
       timeline.messages.each do |commit|
         puts "[#{commit.committed_date}] @#{commit.author.name}: #{commit.message}"
       end

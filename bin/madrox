@@ -36,7 +36,7 @@ opts = OptionParser.new do |opts|
   end
 
   opts.on('--import [name]', "Import from external service (twitter)") do |name|
-    options[:import] = name.to_sym
+    options[:import] = name.downcase.to_sym
   end
 
   opts.on('--since-id [ID]', "Oldest Twitter ID to import") do |id|

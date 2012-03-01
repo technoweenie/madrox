@@ -36,7 +36,7 @@ opts = OptionParser.new do |opts|
   end
 
   opts.on('--import [name]', "Import from external service (twitter)") do |name|
-    options[:import] = name.to_sym
+    options[:import] = name.downcase.to_sym
   end
 
   opts.on('--since-id [ID]', "Oldest Twitter ID to import") do |id|
@@ -67,7 +67,7 @@ madrox   = Madrox::Repo.new(m_path)
 timeline = madrox.timeline(name, options[:email])
 
 if !madrox.exist?
-  puts "Invalid Madrox wiki at #{File.expand_path(m_path).inspect}"
+  puts "Invalid Madrox wiki at #{File.expand_path(m_path).inspect} (you need to run madrox into a git repository)"
   exit 0
 end
 
@@ -131,6 +131,7 @@ else
         timeline.post(tweet['text'], :committed_date => Time.parse(tweet['created_at']))
       end
     else # no importer, just list their tweets
+      puts "Warning: no importer known for this service (only 'twitter' is available). Tweets of the account:"
       timeline.messages.each do |commit|
         puts "[#{commit.committed_date}] @#{commit.author.name}: #{commit.message}"
       end

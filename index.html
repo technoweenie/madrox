@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=640" />
+
+    <link rel="stylesheet" href="stylesheets/core.css" media="screen"/>
+    <link rel="stylesheet" href="stylesheets/mobile.css" media="handheld, only screen and (max-device-width:640px)"/>
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
+
+    <script type="text/javascript" src="javascripts/modernizr.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="javascripts/headsmart.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('#main_content').headsmart()
+      })
+    </script>
+    <title>Madrox by technoweenie</title>
+  </head>
+
+  <body>
+    <a id="forkme_banner" href="https://github.com/technoweenie/madrox">Fork Me on GitHub</a>
+    <div class="shell">
+
+      <header>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <h1>Madrox</h1>
+            <h2>Distributed Twitter implementation in Git.</h2>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+      </header>
+
+      <section id="downloads">
+        <span class="inner">
+          <a href="https://github.com/technoweenie/madrox/zipball/master" class="zip"><em>download</em> .ZIP</a><a href="https://github.com/technoweenie/madrox/tarball/master" class="tgz"><em>download</em> .TGZ</a>
+        </span>
+      </section>
+
+      <span class="banner-fix"></span>
+
+      <section id="main_content">
+        <h2>USAGE</h2>
+
+<p>Madrox needs an existing repository with at a single initial commit.  "Tweets"
+are simply commits in a user-specific branch.  Use git to push/pull these 
+branches with remote git repositories.  Create custom timelines by merging
+them locally.</p>
+
+<pre><code>$ cd madrox-sample
+$ git init
+$ touch README
+$ git add README
+$ git commit -m "initial"
+
+$ madrox rick --email=rick@whatever.com --msg="Hi"
+@rick: Hi
+8578cec211388123e071eccb1fda2024a44ac4c5
+
+$ madrox bob --email=bob@whatever.com --msg="@rick: sup?"
+@bob: @rick: sup?
+002e1e01517ef2e5486b696814146d5cca4c07a2
+
+$ madrox rick --email=rick@whatever.com --msg="@bob: nada"
+@rick: @bob: nada
+178f84a58ab1878d1a995ba9ce16ad11e5e58808
+</code></pre>
+
+<p>Now, we have three tweets from two different users in their own branch.  You
+can merge these two branches into a single branch to see their commits in one
+stream:</p>
+
+<pre><code>$ git branch
+  bob
+* master
+  rick
+
+# Create a new branch
+$ git checkout -b timeline
+$ git merge rick
+$ git merge bob
+
+$ madrox rick
+@rick: @bob: nada
+@rick: Hi
+
+$ madrox timeline
+@rick: @bob: nada
+@bob: @rick: sup?
+@rick: Hi
+</code></pre>
+
+<h2>Importing</h2>
+
+<p>You can import tweets with the <code>--import</code> option.  You're still bound by Twitter's 3200 tweet limit, unfortunately.</p>
+
+<pre><code>$ madrox --import=twitter --since-id=123 --max-id=456 --email=EMAIL TWITTER_LOGIN
+
+You can also use `rake console` and import the data yourself from other sources.
+
+$ madrox --irb --email=EMAIL TWITTER_LOGIN
+&gt;&gt; tweets.each do |tweet|
+?&gt;   timeline.post(tweet['text'], :committed_date =&gt; Time.parse(tweet['created_at']))
+?&gt; end
+</code></pre>
+
+<h2>Ruby API</h2>
+
+<p>The Madrox ruby API revolves around two objects:  <code>Madrox::Repo</code> and 
+<code>Madrox::Timeline</code>.</p>
+
+<p><code>Madrox::Repo</code> simply tracks the Git repo.  It's used to create Timeline
+instances.</p>
+
+<div class="highlight">
+<pre><span class="n">repo</span> <span class="o">=</span> <span class="no">Madrox</span><span class="o">::</span><span class="no">Repo</span><span class="o">.</span><span class="n">new</span> <span class="s2">"/path/to/repo"</span>
+<span class="n">timeline</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">timeline</span><span class="p">(</span><span class="s1">'rick'</span><span class="p">,</span> <span class="s1">'rick@email.com'</span><span class="p">)</span>
+</pre>
+</div>
+
+
+<p><code>Madrox::Timeline</code> represents a branch of the Git repo, and lets you post
+new messages to it.  These branches can either represent a user's timeline,
+a grouped timeline with commits merged from multiple users, or something 
+custom (such as a user's favorites).</p>
+
+<div class="highlight">
+<pre><span class="n">timeline</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">"Eating a sandwich."</span><span class="p">)</span>
+</pre>
+</div>
+
+
+<p>You can list messages from a timeline.  They come out as <code>Grit::Commit</code> 
+instances.</p>
+
+<div class="highlight">
+<pre><span class="n">mine</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">timeline</span><span class="p">(</span><span class="s1">'me'</span><span class="p">,</span> <span class="s1">'my-email@email.com'</span><span class="p">)</span>
+<span class="n">rick</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">timeline</span><span class="p">(</span><span class="s1">'rick'</span><span class="p">)</span>
+<span class="n">msg</span> <span class="o">=</span> <span class="n">rick</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">first</span>
+<span class="n">msg</span><span class="o">.</span><span class="n">sha</span>            <span class="c1"># =&gt; 21f1ca7995b46a1008c402c92c4aa074806f92c4</span>
+<span class="n">msg</span><span class="o">.</span><span class="n">message</span>        <span class="c1"># =&gt; "Eating a sandwich."</span>
+<span class="n">msg</span><span class="o">.</span><span class="n">committer</span>      <span class="c1"># =&gt; #&lt;Grit::Actor "rick ..."&gt;</span>
+<span class="n">msg</span><span class="o">.</span><span class="n">committed_date</span> <span class="c1"># =&gt; Sat Nov 6 11:48:02 -0700 2010</span>
+</pre>
+</div>
+
+
+<p>You can add a message as a favorite:</p>
+
+<div class="highlight">
+<pre><span class="n">sha</span> <span class="o">=</span> <span class="n">mine</span><span class="o">.</span><span class="n">fave</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+<span class="n">commit</span> <span class="o">=</span> <span class="n">mine</span><span class="o">.</span><span class="n">grit</span><span class="o">.</span><span class="n">commit</span><span class="p">(</span><span class="n">sha</span><span class="p">)</span>
+<span class="n">commit</span><span class="o">.</span><span class="n">sha</span>            <span class="c1"># =&gt; b1dfaf30dff279b953abc8b985bb41e247a0e50c</span>
+<span class="n">commit</span><span class="o">.</span><span class="n">message</span>        <span class="c1"># =&gt; "Eating a sandwich."</span>
+<span class="n">commit</span><span class="o">.</span><span class="n">committer</span>      <span class="c1"># =&gt; #&lt;Grit::Actor "me ..."&gt;</span>
+<span class="n">commit</span><span class="o">.</span><span class="n">committed_date</span> <span class="c1"># =&gt; Sat Nov 6 12:48:02 -0700 2010</span>
+<span class="n">commit</span><span class="o">.</span><span class="n">author</span>         <span class="c1"># =&gt; #&lt;Grit::Actor "rick ..."&gt;</span>
+<span class="n">commit</span><span class="o">.</span><span class="n">authored_date</span>  <span class="c1"># =&gt; Sat Nov 6 11:48:02 -0700 2010</span>
+</pre>
+</div>
+
+
+<p>You can also retweet the message:</p>
+
+<div class="highlight">
+<pre><span class="n">sha</span> <span class="o">=</span> <span class="n">mine</span><span class="o">.</span><span class="n">retweet</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+<span class="n">commit</span> <span class="o">=</span> <span class="n">mine</span><span class="o">.</span><span class="n">grit</span><span class="o">.</span><span class="n">commit</span><span class="p">(</span><span class="n">sha</span><span class="p">)</span>
+<span class="n">commit</span><span class="o">.</span><span class="n">sha</span>            <span class="c1"># =&gt; d1d22036741d0726901b8e555801885018e7c8df</span>
+<span class="n">commit</span><span class="o">.</span><span class="n">message</span>        <span class="c1"># =&gt; "Eating a sandwich."</span>
+<span class="n">commit</span><span class="o">.</span><span class="n">committer</span>      <span class="c1"># =&gt; #&lt;Grit::Actor "me ..."&gt;</span>
+<span class="n">commit</span><span class="o">.</span><span class="n">committed_date</span> <span class="c1"># =&gt; Sat Nov 6 12:48:02 -0700 2010</span>
+<span class="n">commit</span><span class="o">.</span><span class="n">author</span>         <span class="c1"># =&gt; #&lt;Grit::Actor "rick ..."&gt;</span>
+<span class="n">commit</span><span class="o">.</span><span class="n">authored_date</span>  <span class="c1"># =&gt; Sat Nov 6 11:48:02 -0700 2010</span>
+</pre>
+</div>
+
+
+<p>Add your own snarky comment:</p>
+
+<div class="highlight">
+<pre><span class="n">sha</span> <span class="o">=</span> <span class="n">mine</span><span class="o">.</span><span class="n">retweet</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="s2">"TMI, bro!"</span><span class="p">)</span>
+<span class="n">commit</span> <span class="o">=</span> <span class="n">mine</span><span class="o">.</span><span class="n">grit</span><span class="o">.</span><span class="n">commit</span><span class="p">(</span><span class="n">sha</span><span class="p">)</span>
+<span class="n">commit</span><span class="o">.</span><span class="n">sha</span>            <span class="c1"># =&gt; 06836ee40595bf06fde3eb276a08b10ac7733a74</span>
+<span class="n">commit</span><span class="o">.</span><span class="n">message</span>        <span class="c1"># =&gt; "TMI, bro! RT @rick Eating a sandwich."</span>
+</pre>
+</div>
+
+
+<h2>TODO</h2>
+
+<ul>
+<li>Twitter pushing support</li>
+<li>Git Notes for Twitter (or other) metadata.</li>
+<li>Better importing.</li>
+</ul>
+      </section>
+
+      <footer>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <p>this project by <a href="https://github.com/technoweenie">technoweenie</a> can be found on <a href="https://github.com/technoweenie/madrox">GitHub</a></p>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+        <p>Generated with <a href="#">GitHub Pages</a> using Merlot</p>
+        <span class="octocat"></span>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>

@@ -1,6 +1,5 @@
 require 'test/unit'
-$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
-require 'madrox'
+require File.expand_path('../../lib/madrox', __FILE__)
 
 class MadroxTest < Test::Unit::TestCase
   def fork_git_fixture(name, dest = :test)

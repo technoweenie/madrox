@@ -18,7 +18,7 @@ module Madrox
     # Returns nothing.
     attr_accessor :email
 
-    # Gets the Madrox object for this timeline.
+    # Public: Gets the Madrox object for this timeline.
     #
     # Returns a Madrox::Repo instance.
     attr_reader :repo
@@ -120,7 +120,7 @@ module Madrox
     #
     # Returns a Grit::Actor.
     def actor
-      Entry::Actor.new(Grit::Actor.new(@user, @email))
+      Actor.new(Grit::Actor.new(@user, @email))
     end
   end
 end

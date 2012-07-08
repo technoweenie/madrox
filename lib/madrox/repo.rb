@@ -25,7 +25,7 @@ module Madrox
     #
     # Returns a Madrox::Timeline.
     def timeline(user, email = nil)
-      Madrox::Timeline.new(self, user, email)
+      Timeline.new(self, user, email)
     end
   end
 end

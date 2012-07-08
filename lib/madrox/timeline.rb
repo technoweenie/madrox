@@ -14,7 +14,7 @@ module Madrox
     # Public: Sets the email for this timeline.
     #
     # email - The String email.
-    # 
+    #
     # Returns nothing.
     attr_accessor :email
 
@@ -35,15 +35,15 @@ module Madrox
       @grit  = repo.grit
     end
 
-    # Public: Gets the messages for this timeline.  Automatically removes any 
+    # Public: Gets the messages for this timeline.  Automatically removes any
     # merge commits.
     #
     # options - Hash of options to filter the message output.
-    #           :max_count - Fixnum specifying the number of commits to show.  
+    #           :max_count - Fixnum specifying the number of commits to show.
     #                        Default: 30.
     #           :skip      - Fixnum specifying the number of commits to skip.
-    #           :page      - Fixnum of the current page.  This is used to 
-    #                        implicitly calculate the :skip option.  
+    #           :page      - Fixnum of the current page.  This is used to
+    #                        implicitly calculate the :skip option.
     #                        Default: 1
     #
     # Returns an Array of Grit::Commit instances.
@@ -61,11 +61,11 @@ module Madrox
     # commit with no changed content.  Just a message.
     #
     # message - String message for the timeline update.
-    # options - Hash of options passed to Grit::Index#commit. 
+    # options - Hash of options passed to Grit::Index#commit.
     #
     # Returns a String SHA1 of the created Git commit.
     def post(message, options = {})
-      idx     = @grit.index
+      idx = @grit.index
       options = {:committer => actor, :head => @user}.update(options)
       options[:parents] ||= [@grit.commit(@user) || @grit.commit("HEAD")]
       options[:parents].compact!
@@ -95,7 +95,7 @@ module Madrox
     end
 
     # Public: Marks a given commit as a favorite.  The commit is stored in a
-    # separate branch named "#{user}-favorites".  The commit's original 
+    # separate branch named "#{user}-favorites".  The commit's original
     # committed author and date remain the same, and the new commit tracks
     # the date it was favorited.
     def fave(commit)

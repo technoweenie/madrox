@@ -67,7 +67,7 @@ end
 
 name = ARGV.shift # timeline name
 m_path = ARGV.shift || Dir.pwd
-madrox = Madrox::Repo.new(m_path)
+madrox = Madrox::Repo.for(m_path)
 timeline = madrox.timeline(name, options[:email])
 
 if !madrox.exist?

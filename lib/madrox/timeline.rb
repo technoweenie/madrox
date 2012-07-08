@@ -35,8 +35,7 @@ module Madrox
       @grit  = repo.grit
     end
 
-    # Public: Gets the messages for this timeline.  Automatically removes any
-    # merge commits.
+    # Public: Gets the messages for this timeline.
     #
     # options - Hash of options to filter the message output.
     #           :max_count - Fixnum specifying the number of commits to show.
@@ -48,9 +47,7 @@ module Madrox
     #
     # Returns an Array of Grit::Commit instances.
     def messages(options = nil)
-      struct = MessagesOptions.fill(options)
-      Entry.from(@grit.log(@user, nil, struct.to_options).
-        delete_if { |commit| commit.parents.size != 1 })
+      @repo.messages(self, MessagesOptions.fill(options))
     end
 
     # Public: Posts the given message to the timeline.  This is a simple
@@ -69,10 +66,9 @@ module Madrox
     #
     # Returns a String SHA1 of the created Git commit.
     def post(message, options = nil)
-      idx = @grit.index
       struct = PostOptions.new(@user, actor).fill(options)
       struct.parent ||= @grit.commit(struct.head) || @grit.commit("HEAD")
-      @grit.index.commit(message, struct.to_options)
+      @repo.post(self, message, struct)
     end
 
     # Public: Retweets a given commit.  The author name and date is taken
@@ -125,3 +121,4 @@ module Madrox
     end
   end
 end
+

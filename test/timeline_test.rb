@@ -1,13 +1,16 @@
 require File.expand_path('../helper', __FILE__)
 
-class TimelineTest < MadroxTest
+class GritTest < MadroxTest
   def setup
-    teardown
-    @repo = Madrox::Repo.new(File.join(File.dirname(__FILE__), 'fixtures/simple.git'))
+    clear_git_fixtures
+    @path = File.join(File.dirname(__FILE__), 'fixtures/simple.git')
+    @repo = Madrox::Repo.with_grit(@path)
+    @bad_repo = Madrox::Repo.with_grit("FOO")
   end
 
-  def teardown
-    clear_git_fixtures
+  def test_repo_exists
+    assert !@bad_repo.exist?
+    assert @repo.exist?
   end
 
   def test_finds_messages

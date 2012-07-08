@@ -21,7 +21,7 @@ Basic Command Line Usage:
 Options:
 HELP
 
-exec    = {}
+exec = {}
 options = {}
 
 opts = OptionParser.new do |opts|
@@ -42,13 +42,17 @@ opts = OptionParser.new do |opts|
   opts.on('--since-id [ID]', "Oldest Twitter ID to import") do |id|
     options[:since_id] = id
   end
-  
+
   opts.on('--max-id [ID]', "Newest Twitter ID to import") do |id|
     options[:max_id] = id
   end
 
-  opts.on('--irb', "Loads an IRB session") do 
+  opts.on('--irb', "Loads an IRB session") do
     options[:irb] = true
+  end
+
+  opts.on('-v', '--version', "Shows Madrox version") do
+    options[:version] = true
   end
 end
 
@@ -61,9 +65,9 @@ rescue OptionParser::InvalidOption
   exit
 end
 
-name     = ARGV.shift # timeline name
-m_path   = ARGV.shift || Dir.pwd
-madrox   = Madrox::Repo.new(m_path)
+name = ARGV.shift # timeline name
+m_path = ARGV.shift || Dir.pwd
+madrox = Madrox::Repo.new(m_path)
 timeline = madrox.timeline(name, options[:email])
 
 if !madrox.exist?
@@ -74,6 +78,10 @@ end
 if msg = (timeline.user && options[:msg])
   puts "@#{timeline.user}: #{msg}"
   puts timeline.post(msg)
+end
+
+if options[:version]
+  puts "Madrox v#{Madrox::VERSION}"
 end
 
 if options[:irb]
@@ -103,7 +111,7 @@ if options[:irb]
 
   puts "Loaded Madrox wiki at #{File.expand_path(m_path).inspect}."
   IRB.start_session(binding)
-else 
+elsif !options[:version]
   case options[:import]
     when :twitter
       puts "Importing tweets from Twitter..."
@@ -131,7 +139,9 @@ else
         timeline.post(tweet['text'], :committed_date => Time.parse(tweet['created_at']))
       end
     else # no importer, just list their tweets
-      puts "Warning: no importer known for this service (only 'twitter' is available). Tweets of the account:"
+      if options[:import]
+        puts "Warning: no importer known for this service (only 'twitter' is available). Tweets of the account:"
+      end
       timeline.messages.each do |commit|
         puts "[#{commit.committed_date}] @#{commit.author.name}: #{commit.message}"
       end

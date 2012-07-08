@@ -90,7 +90,7 @@ module Madrox
       end
       message = "#{message} #{commit.message}"
       message.strip!
-      post(message, options.update(:author => commit.author, 
+      post(message, options.update(:author => commit.author,
         :authored_date => commit.authored_date))
     end
 

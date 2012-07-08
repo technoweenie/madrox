@@ -47,13 +47,9 @@ module Madrox
     #                        Default: 1
     #
     # Returns an Array of Grit::Commit instances.
-    def messages(options = {})
-      options[:no_merges]   = true
-      options[:max_count] ||= 30
-      options[:skip]      ||= begin
-        options[:max_count] * ([options.delete(:page).to_i, 1].max - 1)
-      end
-      Entry.from(@grit.log(@user, nil, options).
+    def messages(options = nil)
+      struct = MessagesOptions.fill(options)
+      Entry.from(@grit.log(@user, nil, struct.to_options).
         delete_if { |commit| commit.parents.size != 1 })
     end
 
@@ -72,16 +68,11 @@ module Madrox
     #                             to the current SHA of the 
     #
     # Returns a String SHA1 of the created Git commit.
-    def post(message, options = {})
+    def post(message, options = nil)
       idx = @grit.index
-      options = {:committer => actor, :head => @user}.update(options)
-      options[:parents] ||= begin
-        parent = options[:parent] || @grit.commit(options[:head]) ||
-          @grit.commit("HEAD")
-        [parent]
-      end
-      options[:parents].compact!
-      @grit.index.commit(message, options)
+      struct = PostOptions.new(@user, actor).fill(options)
+      struct.parent ||= @grit.commit(struct.head) || @grit.commit("HEAD")
+      @grit.index.commit(message, struct.to_options)
     end
 
     # Public: Retweets a given commit.  The author name and date is taken
@@ -95,12 +86,12 @@ module Madrox
     #                             author (if different than the committer).
     #           :authored_date  - The Time that the original Entry was written.
     #           :head           - The String name of the Git reference to
-    #                             update.  Defaults to the 
+    #                             update.  Defaults to the Timeline name.
     #           :parent         - The String SHA of the parent commit.  Defaults
-    #                             to the current SHA of the 
+    #                             to the current SHA of the Timeline ref.
     #
     # Returns a String SHA1 of the created Git commit.
-    def retweet(commit, message, options = {})
+    def retweet(commit, message, options = nil)
       if message.is_a?(Hash)
         options = message
         message = nil
@@ -110,6 +101,8 @@ module Madrox
       end
       message = "#{message} #{commit.message}"
       message.strip!
+
+      options ||= {}
       post(message, options.update(:author => commit.author,
         :authored_date => commit.authored_date))
     end

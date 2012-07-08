@@ -134,9 +134,12 @@ elsif !options[:version]
       end
       puts "Importing #{tweets.size} tweets..."
       tweets.reverse!
+      parent = nil
       tweets.each_with_index do |tweet, idx|
         puts tweet['id'] if (idx + 1) % 100 == 0
-        timeline.post(tweet['text'], :committed_date => Time.parse(tweet['created_at']))
+        parent = timeline.post(tweet['text'],
+          :parent => parent,
+          :committed_date => Time.parse(tweet['created_at']))
       end
     else # no importer, just list their tweets
       if options[:import]

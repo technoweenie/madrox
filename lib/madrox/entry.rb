@@ -43,6 +43,9 @@ module Madrox
       :sha,
 
       # Public: Returns the Time that the Entry was created.
+      :committed_date,
+
+      # Public: Returns the Time that the original Entry was created.
       :authored_date
 
     # Public: Initializes from a Grit::Commit.

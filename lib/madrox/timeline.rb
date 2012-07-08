@@ -53,8 +53,8 @@ module Madrox
       options[:skip]      ||= begin
         options[:max_count] * ([options.delete(:page).to_i, 1].max - 1)
       end
-      @grit.log(@user, nil, options).
-        delete_if { |commit| commit.parents.size != 1 }
+      Entry.from(@grit.log(@user, nil, options).
+        delete_if { |commit| commit.parents.size != 1 })
     end
 
     # Public: Posts the given message to the timeline.  This is a simple
@@ -108,7 +108,7 @@ module Madrox
     #
     # Returns a Grit::Actor.
     def actor
-      Grit::Actor.new(@user, @email)
+      Entry::Actor.new(Grit::Actor.new(@user, @email))
     end
   end
 end

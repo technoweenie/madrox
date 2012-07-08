@@ -4,7 +4,7 @@ module Madrox
   VERSION = "0.3.0"
 end
 
-
-require File.expand_path('../madrox/repo', __FILE__)
-require File.expand_path('../madrox/timeline', __FILE__)
+%w(repo entry timeline).each do |file|
+  require File.expand_path("../madrox/#{file}", __FILE__)
+end
 

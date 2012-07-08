@@ -90,6 +90,14 @@ module Madrox
     # commit  - The Grit::Commit that is being retweeted.
     # message - An optional String annotation to the retweet content.
     # options - An optional Hash that is passed to #post.
+    #           :committed_date - The Time that the Entry was written.
+    #           :author         - The Madrox::Entry::Actor of the original
+    #                             author (if different than the committer).
+    #           :authored_date  - The Time that the original Entry was written.
+    #           :head           - The String name of the Git reference to
+    #                             update.  Defaults to the 
+    #           :parent         - The String SHA of the parent commit.  Defaults
+    #                             to the current SHA of the 
     #
     # Returns a String SHA1 of the created Git commit.
     def retweet(commit, message, options = {})

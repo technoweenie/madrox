@@ -62,12 +62,24 @@ module Madrox
     #
     # message - String message for the timeline update.
     # options - Hash of options passed to Grit::Index#commit.
+    #           :committed_date - The Time that the Entry was written.
+    #           :author         - The Madrox::Entry::Actor of the original
+    #                             author (if different than the committer).
+    #           :authored_date  - The Time that the original Entry was written.
+    #           :head           - The String name of the Git reference to
+    #                             update.  Defaults to the 
+    #           :parent         - The String SHA of the parent commit.  Defaults
+    #                             to the current SHA of the 
     #
     # Returns a String SHA1 of the created Git commit.
     def post(message, options = {})
       idx = @grit.index
       options = {:committer => actor, :head => @user}.update(options)
-      options[:parents] ||= [@grit.commit(@user) || @grit.commit("HEAD")]
+      options[:parents] ||= begin
+        parent = options[:parent] || @grit.commit(options[:head]) ||
+          @grit.commit("HEAD")
+        [parent]
+      end
       options[:parents].compact!
       @grit.index.commit(message, options)
     end

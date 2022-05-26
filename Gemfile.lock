@@ -1,17 +1,26 @@
 PATH
   remote: .
   specs:
-    madrox (0.1.0)
-      yajl-ruby (~> 0.7.7)
+    madrox (0.3.0)
+      grit (~> 2.5.0)
+      yajl-ruby (>= 0.7.7, < 1.5.0)
 
 GEM
   remote: http://rubygems.org/
   specs:
-    yajl-ruby (0.7.8)
+    diff-lcs (1.5.0)
+    grit (2.5.0)
+      diff-lcs (~> 1.1)
+      mime-types (~> 1.15)
+      posix-spawn (~> 0.3.6)
+    mime-types (1.25.1)
+    posix-spawn (0.3.15)
+    rake (13.0.6)
+    yajl-ruby (1.4.3)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   madrox!
-  yajl-ruby (~> 0.7.7)
+  rake
